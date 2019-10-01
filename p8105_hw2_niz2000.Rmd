@@ -10,7 +10,7 @@ library(tidyverse)
 
 # Problem 1
 
-## Importing Data Tables
+## Read and Clean the Mr. Trash Wheel Sheet
 ```{r}
 library(readxl)
 Trash_Wheel_Data = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 1) %>%
@@ -20,3 +20,25 @@ Trash_Wheel_Data = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
   mutate(sports_balls = as.integer(round(sports_balls,0)))
 ```
 
+## Read and Clean Precipitation Data for 2017 and 2018
+```{r}
+Precipitation_2018 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 5, skip=1) %>%
+  janitor::clean_names() %>%
+  drop_na() 
+```
+
+```{r}
+Precipitation_2017 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 6, skip=1) %>%
+  janitor::clean_names() %>%
+  drop_na() 
+```
+
+```{r}
+Precipitation_Data = bind_rows(Precipitation_2018, Precipitation_2017) %>%
+  janitor::clean_names() %>%
+  mutate(
+    month = as.numeric(month),
+    month = month.abb[month])
+```
+
+## About The Data
