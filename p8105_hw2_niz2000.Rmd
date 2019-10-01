@@ -4,3 +4,19 @@ author: "Nora Zakaria"
 date: "10/1/2019"
 output: github_document
 ---
+```{r}
+library(tidyverse)
+```
+
+# Problem 1
+
+## Importing Data Tables
+```{r}
+library(readxl)
+Trash_Wheel_Data = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 1) %>%
+  janitor::clean_names() %>%
+  drop_na(dumpster) %>%
+  select(-x15, -x16, -x17) %>%
+  mutate(sports_balls = as.integer(round(sports_balls,0)))
+```
+
