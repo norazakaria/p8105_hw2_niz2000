@@ -50,10 +50,34 @@ There are `r nrow(Trash_Wheel_Data)` observations in the dataset "Trash_Wheel_Da
 
 # Problem 2
 
-## Cleaning the Data in pols-month.csv
-```{r}
+### Cleaning the Data in pols-month.csv
 
+```{r}
+pols_month = 
+  read_csv(file = "./data/fivethirtyeight_datasets/pols-month.csv") %>%
+  janitor::clean_names() %>%
+  separate(mon, into = c("year", "month", "day")) %>%
+  mutate(
+    month = as.numeric(month),
+    month = month.abb[month],
+    prez_gop = recode(prez_gop, `1` = "gop", `2` = "gop", `0` = "dem"), 
+    president = prez_gop) %>%
+  select (-prez_dem, -prez_gop, -day)
 ```
+
+### Cleaning the Data in snp.csv
+
+```{r}
+  
+```
+
+### Tidy the Unemployment Data
+
+
+## Join the Datasets
+
+
+## About The Data
 
 
 
