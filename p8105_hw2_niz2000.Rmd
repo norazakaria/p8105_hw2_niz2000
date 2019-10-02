@@ -1,7 +1,7 @@
 ---
 title: "p8105_hw2_niz2000"
 author: "Nora Zakaria"
-date: "10/1/2019"
+date: "10/4/2019"
 output: github_document
 ---
 ```{r}
@@ -24,13 +24,15 @@ Trash_Wheel_Data = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
 ```{r}
 Precipitation_2018 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 5, skip=1) %>%
   janitor::clean_names() %>%
-  drop_na() 
+  drop_na() %>%
+  mutate(Year = 2018)
 ```
 
 ```{r}
 Precipitation_2017 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 6, skip=1) %>%
   janitor::clean_names() %>%
-  drop_na() 
+  drop_na() %>%
+  mutate(Year = 2017)
 ```
 
 ```{r}
@@ -42,3 +44,17 @@ Precipitation_Data = bind_rows(Precipitation_2018, Precipitation_2017) %>%
 ```
 
 ## About The Data
+
+There are `r nrow(Trash_Wheel_Data)` observations in the dataset "Trash_Wheel_Data." There are `r nrow(Precipitation_Data)` observations in the dataset "Precipitation_Data," including 2017 and 2018 precipitation data. In order to perform this analysis, several key variables for both datasets were identified. In the Trash_Wheel_Data set, we are interested in "year," "month," "sports balls," "weight," "volume," and "homes powered." In the Precipitation_Data set, we are interested in the variables "month" and "total" which demonstrates the amount of precipitation in inches, each month. The variable "month" is present in both the Trash_Wheel_Data and Precipitation_Data datasets, and are both numeric. For the available data, the total amount of precipitation in inches was `r sum(pull(Precipitation_2018, total))` for 2018. The median number of sports balls in a dumpster in 2017 was `r Trash_Wheel_Data %>% filter(year == "2017") %>% pull(sports_balls) %>% median()`. 
+
+
+# Problem 2
+
+## Cleaning the Data in pols-month.csv
+```{r}
+
+```
+
+
+
+# Problem 3
