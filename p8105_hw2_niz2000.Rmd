@@ -4,6 +4,7 @@ author: "Nora Zakaria"
 date: "10/4/2019"
 output: github_document
 ---
+
 ```{r}
 library(tidyverse)
 ```
@@ -44,7 +45,6 @@ Precipitation_Data = bind_rows(Precipitation_2018, Precipitation_2017) %>%
 ```
 
 ## About The Data
-
 There are `r nrow(Trash_Wheel_Data)` observations in the dataset "Trash_Wheel_Data." There are `r nrow(Precipitation_Data)` observations in the dataset "Precipitation_Data," including 2017 and 2018 precipitation data. In order to perform this analysis, several key variables for both datasets were identified. In the Trash_Wheel_Data set, we are interested in "year," "month," "sports balls," "weight," "volume," and "homes powered." In the Precipitation_Data set, we are interested in the variables "month" and "total" which demonstrates the amount of precipitation in inches, each month. The variable "month" is present in both the Trash_Wheel_Data and Precipitation_Data datasets, and are both numeric. For the available data, the total amount of precipitation in inches was `r sum(pull(Precipitation_2018, total))` for 2018. The median number of sports balls in a dumpster in 2017 was `r Trash_Wheel_Data %>% filter(year == "2017") %>% pull(sports_balls) %>% median()`. 
 
 
@@ -62,6 +62,7 @@ pols =
     prez_gop = recode(prez_gop, `1` = "gop", `2` = "gop", `0` = "dem"), 
     president = prez_gop) %>%
   select (-prez_dem, -prez_gop, -day)
+pols
 ```
 
 ### Cleaning the Data in snp.csv
@@ -74,6 +75,7 @@ snp =
     month = as.numeric(month),
     month = month.abb[month]) %>%
   select (starts_with ("year"), everything(), -day)
+snp
 ```
 
 ### Tidy the Unemployment Data
@@ -83,19 +85,47 @@ unemployment =
   pivot_longer(
     Jan:Dec, 
     names_to = "month",
-    values_to = "year") %>%
-  mutate(
-    month = as.numeric(month),
-    month = month.abb[month]) %>%
-  janitor::clean_names()
+    values_to = "unemployment rate") %>%
+  janitor::clean_names() %>%
+  mutate(year = as.character(year)) %>%
+  drop_na()
+unemployment
 ```
 
 
-## Join the Datasets
+## Join the Datasets Pols and SNP
+```{r}
+pols_snp = 
+  left_join(pols, snp, by = c("year", "month"))
+pols_snp
+```
 
+## Join the Datasets Pols_SNP and Unemployment
+```{r}
+pols_snp_unemployment = 
+  left_join(pols_snp, unemployment, by = c("year", "month"))
+pols_snp_unemployment
+```
 
 ## About The Data
-
+Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
 
 # Problem 3
+
+## Tidy the Popular_Baby_Names Dataset
+```{r}
+
+```
+
+## Table Demontrating Rank in Popularity of "Olivia"
+```{r}
+
+```
+
+
+## Scatter Plot Demonstrating Name Popularity
+```{r}
+
+```
+
