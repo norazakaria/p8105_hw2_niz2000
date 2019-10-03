@@ -115,7 +115,21 @@ Explain briefly what each dataset contained, and describe the resulting dataset 
 
 ## Tidy the Popular_Baby_Names Dataset
 ```{r}
-
+Popular_Baby_Names = 
+  read_csv(file = "data/Popular_Baby_Names.csv") %>%
+  janitor::clean_names() %>%
+  rename(
+    first_name = childs_first_name,
+    birth_year = year_of_birth) %>%
+  mutate(
+    first_name = str_to_lower(first_name),
+    ethnicity = str_to_lower(ethnicity),
+    gender = str_to_lower(gender)) %>%
+  mutate(
+    ethnicity = if_else(ethnicity == "asian and paci", "asian and pacific islander", ethnicity),
+    ethnicity = if_else(ethnicity == "black non hisp", "black non hispanic", ethnicity),
+    ethnicity = if_else(ethnicity == "white non hisp", "white and non hispanic", ethnicity)) %>%
+  distinct()
 ```
 
 ## Table Demontrating Rank in Popularity of "Olivia"
