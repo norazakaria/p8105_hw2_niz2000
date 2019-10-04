@@ -160,6 +160,15 @@ Male = Popular_Baby_Names %>%
 kable(Male)
 ```
 
+## Scatter Plot Demonstrating Name Popularity
+```{r}
+male_white_children = Popular_Baby_Names %>%
+  filter(
+    gender == "male",
+    birth_year == "2016",
+    ethnicity == "white non hispanic")
+ggplot(male_white_children, aes(x = rank, y = count)) + geom_point()
+```
 
 
 
