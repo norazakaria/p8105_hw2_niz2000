@@ -21,7 +21,7 @@ Trash_Wheel_Data = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
   select(-x15, -x16, -x17) %>%
   mutate(sports_balls = as.integer(round(sports_balls,0)))
 ```
-The new 2019 version of Mr. Trash Wheel data was used for cleaning and analyses. All non-data entries and rows without dumpster-specific data were omited, the number of sports balls was converted to an integer variable, and reasonable variable names are used, such as "dumpster," "month," "year," and "sports balls."
+The new 2019 version of the Mr. Trash Wheel data was used for cleaning and analyses. All non-data entries and rows without dumpster-specific data were omited, the number of sports balls was converted to an integer variable, and reasonable variable names were used, such as "dumpster," "month," "year," and "sports_balls."
 
 ## Read and Clean Precipitation Data for 2017 and 2018
 ```{r}
@@ -48,10 +48,10 @@ Precipitation_Data = bind_rows(Precipitation_2018, Precipitation_2017) %>%
     month = as.numeric(month),
     month = month.abb[month])
 ```
-The precipitation datasets were combined, and the month variable was converted to a character variable.
+The precipitation datasets were combined, and the month variable was converted to a character variable. The "clean_names" tool was used throughout the data cleaning steps in order to maintain consistency in variable names and letter case.
 
 ## About The Data:
-After cleaning the datasets, there are `r nrow(Trash_Wheel_Data)` observations in the dataset "Trash_Wheel_Data" and there are `r nrow(Precipitation_Data)` observations in the dataset "Precipitation_Data," including both 2017 and 2018 data. In order to perform this analysis, several key variables for both datasets were identified. In the Trash_Wheel_Data set, we are interested in "year," "month," "dumpster," and "sports_balls," as these are the variables used in this analysis. However, variables such as "weight_tons," "volume_cubic_yards," and "homes_powered" are also key variables in analysing this dataset in general, as they pertain to the purpose of Mr. Trash Wheel in harnessing the power of nature to clean the Baltimore harbor. In the Precipitation_Data set, we are interested in the key variables "month" and "total" which demonstrate the amount of precipitation in inches, each month. Of note, the variable "month" is present in both the Trash_Wheel_Data and Precipitation_Data datasets, as a numeric variable in both datasets. For the available data, the total amount of precipitation in inches was `r sum(pull(Precipitation_2018, total))` for 2018. The median number of sports balls in a dumpster in 2017 was `r Trash_Wheel_Data %>% filter(year == "2017") %>% pull(sports_balls) %>% median()`. 
+After cleaning the datasets, there are `r nrow(Trash_Wheel_Data)` observations in the dataset "Trash_Wheel_Data" and there are `r nrow(Precipitation_Data)` observations in the dataset "Precipitation_Data," including both 2017 and 2018 data. In order to perform this analysis, several key variables for both datasets were identified. In the Trash_Wheel_Data set, we are interested in "year," "month," "dumpster," and "sports_balls," as these are the variables used in this analysis. However, variables such as "weight_tons," "volume_cubic_yards," and "homes_powered" are also key variables in analysing this dataset in general, as they pertain to the purpose of Mr. Trash Wheel in harnessing the power of nature to clean the Baltimore harbor. In the Precipitation_Data set, we are interested in the key variables "month" and "total" which demonstrate the amount of precipitation in inches, each month. Of note, the variable "month" is present in both the Trash_Wheel_Data and Precipitation_Data datasets, as a numeric variable. For the available data, the total amount of precipitation in inches was `r sum(pull(Precipitation_2018, total))` for 2018. The median number of sports balls in a dumpster in 2017 was `r Trash_Wheel_Data %>% filter(year == "2017") %>% pull(sports_balls) %>% median()`. 
 
 
 # Problem 2
@@ -69,7 +69,7 @@ pols =
     president = prez_gop) %>%
   select (-prez_dem, -prez_gop, -day)
 ```
-There are `r nrow(pols)` observations in the cleaned pols dataset. In the pols dataset the month variable was broken into "year," "month," and "day" integer variables, and the month number was replaced with the name (i.e. the name Jan is displayed compared to the integer 1). A new president variable was creaed, and the "day" variable was removed.
+There are `r nrow(pols)` observations in the cleaned pols dataset, related to the number of national politicians who are democratic or republican at any given time. In the pols dataset the month variable was broken into "year," "month," and "day" integer variables, and the month number was replaced with the month name (i.e. the name Jan is displayed, in lieu of the integer 1). A new president variable was created to indicate whether the president of that year belonged to the democratic (dem) or republican (gop) party, and the "day" variable was removed.
 
 ### Cleaning the Data in the "snp.csv"
 ```{r}
@@ -82,9 +82,9 @@ snp =
     month = month.abb[month]) %>%
   select (starts_with ("year"), everything(), -day)
 ```
-There are `r nrow(snp)` observations in the cleaned snp dataset. In the snp dataset, the month number was replaced with the month name, and arranged according with "year" and "month" as the leading columns.
+There are `r nrow(snp)` observations in the cleaned snp dataset, related to Standard & Poor’s stock market index (S&P), which is often used as a representative measure of the stock market overall. In the snp dataset, the month number was replaced with the month name, and arranged according to "year" and "month" as the leading columns, followed by the variable "close," indicating the closing value of the S&P stock index on that associated date.
 
-### Tidy the Unemployment Data
+### Tidy the "Unemployment" Data
 ```{r}
 unemployment =
   read_csv(file = "./data/fivethirtyeight_datasets/unemployment.csv") %>%
@@ -95,16 +95,16 @@ unemployment =
   janitor::clean_names() %>%
   mutate(year = as.character(year))
 ```
-The unemployment dataset was switched from "wide" to "long" format through pivoting, and key variables have the same name to ensure they take the same values. For example, "year" and "month" are character variables across the unemployment, pols, and snp datasets. After cleaning, there are `r nrow(unemployment)` observations in the unemployment dataset.
+The unemployment dataset demonstrates the percentage of unemployment per month within a given year. During cleaning, the dataset was switched from "wide" to "long" format through pivoting, and key variable names have the same name to ensure they take the same values. For example, "year" and "month" are character variables across the unemployment, pols, and snp datasets. There are `r nrow(unemployment)` observations in the unemployment dataset.
 
-## Join the Datasets Pols and SNP
+## Join the Datasets "Pols" and "SNP"
 ```{r}
 pols_snp = 
   left_join(pols, snp, by = c("year", "month"))
 ```
-There are `r nrow(pols_snp)` observations in the joined dataset pols_snp, joining pols and snp.
+There are `r nrow(pols_snp)` observations in the joined dataset pols_snp, joining pols and snp into one dataset.
 
-## Join the Datasets Pols_SNP and Unemployment
+## Join the Datasets "Pols_SNP" and "Unemployment"
 ```{r}
 pols_snp_unemployment = 
   left_join(pols_snp, unemployment, by = c("year", "month"))
@@ -112,11 +112,7 @@ pols_snp_unemployment =
 There are `r nrow(pols_snp_unemployment)` observations in the joined dataset pols_snp_unemployment, joining unemployment to the pol_snp dataset.
 
 ## About The Data:
-The pols dataset containes data from 1947 to 2015 with `r nrow(pols)` observations and `r ncol(pols)` variables, with the key variables being "year," "month," and "president." The snp dataset contains data ranging from 1950 to 2015, with `r nrow(snp)` observations and `r ncol(snp)` variables, "year," "month," and "close." The unemployment dataset contains data ranging from 1948 to 2015 with `r nrow(unemployment)` observations and `r ncol(pols)` variables, "year," "month," and "unemployment_rate." The datasets were joined on the key variables "year" and "month" present in all three datassets, which were cleaned uniformly in order for the datasets to join successfully. 
-
-After joining the datasets pols and snp, the pols_snp dataset consists of data from years 1947 to 2015 with `r nrow(pols_snp)` observations and `r ncol(pols_snp)` variables, containing key variables such as "year," "month," "president," and "close." After joining the unemployment dataset with the new pols_snp dataset, there are `r nrow(pols_snp_unemployment)` observations and `r ncol(pols_snp_unemployment)` variables, spanning the same range of years (1947 to 2015) and containing the same variables as the pols_snp dataset, with the addition of unemployment_rate. The three datasets were joined on "year" and "month," with the final dataset containing the widest variety of variables, and spanning from the earliest year in any of the three original datasets (1947 from pols) to the latest in all three (2015).
-
-Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+The cleaned pols dataset containes data from 1947 to 2015 with `r nrow(pols)` observations and `r ncol(pols)` variables. Key variables from this dataset were "year" and "month," as these variables were used to join pols to the snp and then employment datasets. "Prez_gop" and "prez_dem" were also key variables, as they were used to create the new variable "president." The cleaned snp dataset contains data ranging from 1950 to 2015, with `r nrow(snp)` observations and `r ncol(snp)` variables. All three variables "year," "month," and "close," are key variables, as "year" and "month" were used to join datasets, and values for "close" can represente measure of the stock market. The cleaned unemployment dataset contains data ranging from 1948 to 2015 with `r nrow(unemployment)` observations and `r ncol(pols)` variables. All three variables, "year," "month," and "unemployment_rate" are key variables. Again, the datasets were joined on the key variables "year" and "month" present in all three datasets, which were cleaned uniformly in order for the datasets to join successfully. After joining the datasets pols and snp, the pols_snp dataset consists of data from years 1947 to 2015 with `r nrow(pols_snp)` observations and `r ncol(pols_snp)` variables, containing key variables such as "year," "month," "president," and "close." After joining the unemployment dataset with the new pols_snp dataset, there are `r nrow(pols_snp_unemployment)` observations and `r ncol(pols_snp_unemployment)` variables, spanning the same range of years (1947 to 2015) and containing the same variables as the pols_snp dataset, with the addition of "unemployment_rate." The three datasets were joined on "year" and "month," with the final dataset containing the widest range of variables, and spanning from the earliest year in any of the three original datasets (1947 from pols) to the latest year of all three (2015).
 
 
 # Problem 3
@@ -139,7 +135,7 @@ Popular_Baby_Names =
     ethnicity = if_else(ethnicity == "white non hisp", "white non hispanic", ethnicity)) %>%
   distinct()
 ```
-There are 12,181 observations in the cleaned dataset Popular_Baby_Names. All duplicate rows were removed, the case structure of string variables such as ethnicity and first_name are now consistently lower case, and the names of the categorical ethnicities in the enthnicity variable are now consistent throughout the dataset. For example, the abbreviated "asian and paci" is consistently "asian and pacific islander," "black non hisp" is consistently "black non hispanic," and "white non hisp" is consistently "white non hispanic."
+There are `r nrow(Popular_Baby_Names)` observations in the cleaned dataset Popular_Baby_Names. All duplicate rows were removed, the case structure of string variables such as ethnicity and first_name are now consistently lower case, and the names of the categorical ethnicities in the enthnicity variable are now consistent throughout the dataset. For example, the abbreviated "asian and paci" is now consistently "asian and pacific islander," "black non hisp" is now consistently "black non hispanic," and "white non hisp" is now consistently "white non hispanic."
 
 ## Table Demontrating Rank in Popularity of "Olivia"
 This table demonstrates the rank in popularity of the name "Olivia" as a female baby name over time. There are rows for ethnicities and columns for years, with years demonstrated in temporal order from 2011 to 2016.
@@ -179,7 +175,7 @@ male_white_children = Popular_Baby_Names %>%
     ethnicity == "white non hispanic")
 ggplot(male_white_children, aes(x = rank, y = count)) + geom_point()
 ```
-This scatterplot uses date specifically on male, white non-hispanic children born in 2016, showing the number of children with a name (count on the y axis) against the rank in popularity of that name (rank on the x axis).
+This scatterplot uses data specifically on male, white non-hispanic children born in 2016, showing the number of children with a name (count on the y axis) against the rank in popularity of that name (rank on the x axis).
 
 ### Export the Scatterplot
 ```{r male_white_children}
