@@ -5,6 +5,7 @@ date: "10/4/2019"
 output: github_document
 ---
 
+### Load the Tidyverse Package
 ```{r}
 library(tidyverse)
 ```
@@ -19,7 +20,9 @@ Trash_Wheel_Data = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
   drop_na(dumpster) %>%
   select(-x15, -x16, -x17) %>%
   mutate(sports_balls = as.integer(round(sports_balls,0)))
+Trash_Wheel_Data
 ```
+The new 2019 version of Mr. Trash Wheel data was used for cleaning and analyses. All non-data entries and rows without dumpster-specific data were omited, the number of sports balls was converted to an integer variable, and reasonable varaible names were used,such as "and.
 
 ## Read and Clean Precipitation Data for 2017 and 2018
 ```{r}
