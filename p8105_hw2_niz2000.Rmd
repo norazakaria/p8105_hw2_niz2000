@@ -20,9 +20,8 @@ Trash_Wheel_Data = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
   drop_na(dumpster) %>%
   select(-x15, -x16, -x17) %>%
   mutate(sports_balls = as.integer(round(sports_balls,0)))
-Trash_Wheel_Data
 ```
-The new 2019 version of Mr. Trash Wheel data was used for cleaning and analyses. All non-data entries and rows without dumpster-specific data were omited, the number of sports balls was converted to an integer variable, and reasonable varaible names were used,such as "and.
+The new 2019 version of Mr. Trash Wheel data was used for cleaning and analyses. All non-data entries and rows without dumpster-specific data were omited, the number of sports balls was converted to an integer variable, and reasonable variable names are used, such as "dumpster," "month," "year," and "sports balls."
 
 ## Read and Clean Precipitation Data for 2017 and 2018
 ```{r}
@@ -31,6 +30,7 @@ Precipitation_2018 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx"
   drop_na() %>%
   mutate(Year = 2018)
 ```
+Rows without precipitation data were omitted, and a "year" variable was added to the 2018 Precipitation Data.
 
 ```{r}
 Precipitation_2017 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 6, skip=1) %>%
@@ -38,7 +38,9 @@ Precipitation_2017 = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx"
   drop_na() %>%
   mutate(Year = 2017)
 ```
+Rows without precipitation data were omitted, and a "year" variable was added to the 2017 Precipitation Data.
 
+### Combine Precipitation Datasets 
 ```{r}
 Precipitation_Data = bind_rows(Precipitation_2018, Precipitation_2017) %>%
   janitor::clean_names() %>%
@@ -46,14 +48,15 @@ Precipitation_Data = bind_rows(Precipitation_2018, Precipitation_2017) %>%
     month = as.numeric(month),
     month = month.abb[month])
 ```
+The precipitation datasets were combined, and the month variable was converted to a character variable.
 
-## About The Data
-There are `r nrow(Trash_Wheel_Data)` observations in the dataset "Trash_Wheel_Data." There are `r nrow(Precipitation_Data)` observations in the dataset "Precipitation_Data," including 2017 and 2018 precipitation data. In order to perform this analysis, several key variables for both datasets were identified. In the Trash_Wheel_Data set, we are interested in "year," "month," "sports balls," "weight," "volume," and "homes powered." In the Precipitation_Data set, we are interested in the variables "month" and "total" which demonstrates the amount of precipitation in inches, each month. The variable "month" is present in both the Trash_Wheel_Data and Precipitation_Data datasets, and are both numeric. For the available data, the total amount of precipitation in inches was `r sum(pull(Precipitation_2018, total))` for 2018. The median number of sports balls in a dumpster in 2017 was `r Trash_Wheel_Data %>% filter(year == "2017") %>% pull(sports_balls) %>% median()`. 
+## About The Data:
+After cleaning the datasets, there are `r nrow(Trash_Wheel_Data)` observations in the dataset "Trash_Wheel_Data" and there are `r nrow(Precipitation_Data)` observations in the dataset "Precipitation_Data," including both 2017 and 2018 data. In order to perform this analysis, several key variables for both datasets were identified. In the Trash_Wheel_Data set, we are interested in "year," "month," "dumpster," and "sports_balls," as these are the variables used in this analysis. However, variables such as "weight_tons," "volume_cubic_yards," and "homes_powered" are also key variables in analysing this dataset in general, as they pertain to the purpose of Mr. Trash Wheel in harnessing the power of nature to clean the Baltimore harbor. In the Precipitation_Data set, we are interested in the key variables "month" and "total" which demonstrate the amount of precipitation in inches, each month. Of note, the variable "month" is present in both the Trash_Wheel_Data and Precipitation_Data datasets, as a numeric variable in both datasets. For the available data, the total amount of precipitation in inches was `r sum(pull(Precipitation_2018, total))` for 2018. The median number of sports balls in a dumpster in 2017 was `r Trash_Wheel_Data %>% filter(year == "2017") %>% pull(sports_balls) %>% median()`. 
 
 
 # Problem 2
 
-### Cleaning the Data in pols-month.csv
+### Cleaning the Data in the "pols-month.csv"
 ```{r}
 pols = 
   read_csv(file = "./data/fivethirtyeight_datasets/pols-month.csv") %>%
@@ -67,8 +70,9 @@ pols =
   select (-prez_dem, -prez_gop, -day)
 pols
 ```
+There are 822 observations in the cleaned pols dataset. In the pols dataset the month variable was broken into "year," "month," and "day" integer variables, and the month number was replaced with the name (i.e. the name Jan is displayed compared to the integer 1). A new president variable was creaed, and the "day" variable was removed.
 
-### Cleaning the Data in snp.csv
+### Cleaning the Data in the "snp.csv"
 ```{r}
 snp = 
   read_csv(file = "./data/fivethirtyeight_datasets/snp.csv") %>%
@@ -80,6 +84,7 @@ snp =
   select (starts_with ("year"), everything(), -day)
 snp
 ```
+There are 787 observations in the cleaned snp dataset. In the snp dataset, the month number was replaced with the month name, and arranged according with "year" and "month" as the leading columns.
 
 ### Tidy the Unemployment Data
 ```{r}
@@ -94,7 +99,7 @@ unemployment =
   drop_na()
 unemployment
 ```
-
+The unemployment dataset was switched from "wide" to "long" format through pivoting, and key variables have the same name to ensure they take the same values. For example, "year" and "month" are character variables across the unemployment, pols, and snp datasets. All observations with missing unemployment rates were omitted, a step that would have also taken place in the merge below. After omitting observations with missing data, there are 810 observations in the unemployment dataset.
 
 ## Join the Datasets Pols and SNP
 ```{r}
@@ -102,6 +107,7 @@ pols_snp =
   left_join(pols, snp, by = c("year", "month"))
 pols_snp
 ```
+There are 822 observations in the joined dataset pols_snp, joining pols and snp.
 
 ## Join the Datasets Pols_SNP and Unemployment
 ```{r}
@@ -109,8 +115,9 @@ pols_snp_unemployment =
   left_join(pols_snp, unemployment, by = c("year", "month"))
 pols_snp_unemployment
 ```
+There are 822 observations in the joined dataset pols_snp_unemployment, joining unemployment to the pol_snp dataset.
 
-## About The Data
+## About The Data:
 Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
 
@@ -135,6 +142,7 @@ Popular_Baby_Names =
   distinct()
 Popular_Baby_Names
 ```
+There are 12,181 observations in the cleaned dataset Popular_Baby_Names. All duplicate rows were removed, the case structure of string variables such as ethnicity and first_name are now consistently lower case, and the names of the categorical ethnicities in the enthnicity variable are now consistent throughout the dataset. For example, the abbreviated "asian and paci" is consistently "asian and pacific islander," "black non hisp" is consistently "black non hispanic," and "white non hisp" is consistently "white non hispanic."
 
 ## Table Demontrating Rank in Popularity of "Olivia"
 ```{r}
@@ -148,6 +156,7 @@ Olivia = Popular_Baby_Names %>%
 library(knitr)
 kable(Olivia)
 ```
+This table demonstrates the rank in popularity of the name "Olivia" as a female baby name over time. There are rows for ethnicities and columns for years, with years demonstrated in temporal order from 2011 to 2016.
 
 ## Table Demonstrating Most Popular Male Name
 ```{r}
@@ -162,6 +171,7 @@ Male = Popular_Baby_Names %>%
     values_from = "first_name")
 kable(Male)
 ```
+Similar to the table above for the female name "Olivia," this table displays the most popular name and count among male children over time, for each ethnicity from 2011 to 2016.
 
 ## Scatter Plot Demonstrating Name Popularity
 ```{r}
@@ -172,6 +182,12 @@ male_white_children = Popular_Baby_Names %>%
     ethnicity == "white non hispanic")
 ggplot(male_white_children, aes(x = rank, y = count)) + geom_point()
 ```
+This scatterplot uses date specifically on male, white non-hispanic children born in 2016, showing the number of children with a name (count on the y axis) against the rank in popularity of that name (rank on the x axis).
 
+### Export the Scatterplot
+```{r male_white_children}
+ggsave("male_white_children.pdf")
+```
+The scatterplot has been expored as a PDF, and can be found on the github repository titled male_white_children.
 
 
