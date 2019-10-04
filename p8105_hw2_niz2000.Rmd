@@ -68,9 +68,8 @@ pols =
     prez_gop = recode(prez_gop, `1` = "gop", `2` = "gop", `0` = "dem"), 
     president = prez_gop) %>%
   select (-prez_dem, -prez_gop, -day)
-pols
 ```
-There are 822 observations in the cleaned pols dataset. In the pols dataset the month variable was broken into "year," "month," and "day" integer variables, and the month number was replaced with the name (i.e. the name Jan is displayed compared to the integer 1). A new president variable was creaed, and the "day" variable was removed.
+There are `r nrow(pols)` observations in the cleaned pols dataset. In the pols dataset the month variable was broken into "year," "month," and "day" integer variables, and the month number was replaced with the name (i.e. the name Jan is displayed compared to the integer 1). A new president variable was creaed, and the "day" variable was removed.
 
 ### Cleaning the Data in the "snp.csv"
 ```{r}
@@ -82,9 +81,8 @@ snp =
     month = as.numeric(month),
     month = month.abb[month]) %>%
   select (starts_with ("year"), everything(), -day)
-snp
 ```
-There are 787 observations in the cleaned snp dataset. In the snp dataset, the month number was replaced with the month name, and arranged according with "year" and "month" as the leading columns.
+There are `r nrow(snp)` observations in the cleaned snp dataset. In the snp dataset, the month number was replaced with the month name, and arranged according with "year" and "month" as the leading columns.
 
 ### Tidy the Unemployment Data
 ```{r}
@@ -95,29 +93,29 @@ unemployment =
     names_to = "month",
     values_to = "unemployment rate") %>%
   janitor::clean_names() %>%
-  mutate(year = as.character(year)) %>%
-  drop_na()
-unemployment
+  mutate(year = as.character(year))
 ```
-The unemployment dataset was switched from "wide" to "long" format through pivoting, and key variables have the same name to ensure they take the same values. For example, "year" and "month" are character variables across the unemployment, pols, and snp datasets. All observations with missing unemployment rates were omitted, a step that would have also taken place in the merge below. After omitting observations with missing data, there are 810 observations in the unemployment dataset.
+The unemployment dataset was switched from "wide" to "long" format through pivoting, and key variables have the same name to ensure they take the same values. For example, "year" and "month" are character variables across the unemployment, pols, and snp datasets. After cleaning, there are `r nrow(unemployment)` observations in the unemployment dataset.
 
 ## Join the Datasets Pols and SNP
 ```{r}
 pols_snp = 
   left_join(pols, snp, by = c("year", "month"))
-pols_snp
 ```
-There are 822 observations in the joined dataset pols_snp, joining pols and snp.
+There are `r nrow(pols_snp)` observations in the joined dataset pols_snp, joining pols and snp.
 
 ## Join the Datasets Pols_SNP and Unemployment
 ```{r}
 pols_snp_unemployment = 
   left_join(pols_snp, unemployment, by = c("year", "month"))
-pols_snp_unemployment
 ```
-There are 822 observations in the joined dataset pols_snp_unemployment, joining unemployment to the pol_snp dataset.
+There are `r nrow(pols_snp_unemployment)` observations in the joined dataset pols_snp_unemployment, joining unemployment to the pol_snp dataset.
 
 ## About The Data:
+The pols dataset containes data from 1947 to 2015 with `r nrow(pols)` observations and `r ncol(pols)` variables, with the key variables being "year," "month," and "president." The snp dataset contains data ranging from 1950 to 2015, with `r nrow(snp)` observations and `r ncol(snp)` variables, "year," "month," and "close." The unemployment dataset contains data ranging from 1948 to 2015 with `r nrow(unemployment)` observations and `r ncol(pols)` variables, "year," "month," and "unemployment_rate." The datasets were joined on the key variables "year" and "month" present in all three datassets, which were cleaned uniformly in order for the datasets to join successfully. 
+
+After joining the datasets pols and snp, the pols_snp dataset consists of data from years 1947 to 2015 with `r nrow(pols_snp)` observations and `r ncol(pols_snp)` variables, containing key variables such as "year," "month," "president," and "close." After joining the unemployment dataset with the new pols_snp dataset, there are `r nrow(pols_snp_unemployment)` observations and `r ncol(pols_snp_unemployment)` variables, spanning the same range of years (1947 to 2015) and containing the same variables as the pols_snp dataset, with the addition of unemployment_rate. The three datasets were joined on "year" and "month," with the final dataset containing the widest variety of variables, and spanning from the earliest year in any of the three original datasets (1947 from pols) to the latest in all three (2015).
+
 Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
 
@@ -140,11 +138,11 @@ Popular_Baby_Names =
     ethnicity = if_else(ethnicity == "black non hisp", "black non hispanic", ethnicity),
     ethnicity = if_else(ethnicity == "white non hisp", "white non hispanic", ethnicity)) %>%
   distinct()
-Popular_Baby_Names
 ```
 There are 12,181 observations in the cleaned dataset Popular_Baby_Names. All duplicate rows were removed, the case structure of string variables such as ethnicity and first_name are now consistently lower case, and the names of the categorical ethnicities in the enthnicity variable are now consistent throughout the dataset. For example, the abbreviated "asian and paci" is consistently "asian and pacific islander," "black non hisp" is consistently "black non hispanic," and "white non hisp" is consistently "white non hispanic."
 
 ## Table Demontrating Rank in Popularity of "Olivia"
+This table demonstrates the rank in popularity of the name "Olivia" as a female baby name over time. There are rows for ethnicities and columns for years, with years demonstrated in temporal order from 2011 to 2016.
 ```{r}
 Olivia = Popular_Baby_Names %>%
   filter(first_name == "olivia") %>%
@@ -156,9 +154,9 @@ Olivia = Popular_Baby_Names %>%
 library(knitr)
 kable(Olivia)
 ```
-This table demonstrates the rank in popularity of the name "Olivia" as a female baby name over time. There are rows for ethnicities and columns for years, with years demonstrated in temporal order from 2011 to 2016.
 
 ## Table Demonstrating Most Popular Male Name
+Similar to the table above for the female name "Olivia," this table displays the most popular name and count among male children over time, for each ethnicity from 2011 to 2016.
 ```{r}
 Male = Popular_Baby_Names %>%
   filter(
@@ -171,7 +169,6 @@ Male = Popular_Baby_Names %>%
     values_from = "first_name")
 kable(Male)
 ```
-Similar to the table above for the female name "Olivia," this table displays the most popular name and count among male children over time, for each ethnicity from 2011 to 2016.
 
 ## Scatter Plot Demonstrating Name Popularity
 ```{r}
