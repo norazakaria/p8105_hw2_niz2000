@@ -128,18 +128,38 @@ Popular_Baby_Names =
   mutate(
     ethnicity = if_else(ethnicity == "asian and paci", "asian and pacific islander", ethnicity),
     ethnicity = if_else(ethnicity == "black non hisp", "black non hispanic", ethnicity),
-    ethnicity = if_else(ethnicity == "white non hisp", "white and non hispanic", ethnicity)) %>%
+    ethnicity = if_else(ethnicity == "white non hisp", "white non hispanic", ethnicity)) %>%
   distinct()
+Popular_Baby_Names
 ```
 
 ## Table Demontrating Rank in Popularity of "Olivia"
 ```{r}
-
+Olivia = Popular_Baby_Names %>%
+  filter(first_name == "olivia") %>%
+  select(birth_year, ethnicity, rank) %>%
+  arrange(birth_year) %>%
+  pivot_wider(
+    names_from = "birth_year",
+    values_from = "rank")
+library(knitr)
+kable(Olivia)
 ```
 
-
-## Scatter Plot Demonstrating Name Popularity
+## Table Demonstrating Most Popular Male Name
 ```{r}
-
+Male = Popular_Baby_Names %>%
+  filter(
+    gender == "male",
+    rank == "1") %>%
+  select(birth_year, first_name, ethnicity) %>%
+  arrange(birth_year) %>%
+  pivot_wider(
+    names_from = "birth_year",
+    values_from = "first_name")
+kable(Male)
 ```
+
+
+
 
